@@ -81,8 +81,8 @@ A modern, responsive web application for managing workout routines, tracking cal
 
 ### 1. Clone Repository & Install Dependencies:
 ```bash
-git clone https://github.com/YozouChan/cal.git
-cd cal
+git clone https://github.com/YozouChan/WorkoutPlaner.git
+cd WorkoutPlaner
 npm install
 ```
 
@@ -128,7 +128,7 @@ docker compose down
 ## 📂 Project Structure
 
 ```
-cal/
+WorkoutPlaner/
 ├── public/                     # Static frontend assets
 │   ├── assets/                 # Default exercise illustrations & motivation GIFs
 │   ├── css/                    # Compiled Tailwind CSS output
