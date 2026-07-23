@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  workout-planer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: workout-planer
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./data:/app/data
+      - ./public/uploads:/app/public/uploads

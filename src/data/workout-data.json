@@ -1,0 +1,140 @@
+{
+  "rhythm": 2,
+  "phases": [
+    {
+      "id": "warmup",
+      "name": "Phase 1: Warm-Up",
+      "emoji": "⏱️",
+      "description": "Perform these movements sequentially to elevate your heart rate and prepare your joints for the workout.",
+      "restBetweenSets": null,
+      "exercises": [
+        {
+          "id": "warmup-2",
+          "name": "Hip Circles",
+          "sets": 1,
+          "reps": "10 per direction",
+          "description": "Stand shoulder-width apart and rotate your hips in a circular motion, 10 times clockwise and 10 times counter-clockwise.",
+          "gifUrl": "/assets/images/exercises/hip-circles.png",
+          "gifSource": "AI-generated illustration"
+        },
+        {
+          "id": "warmup-1",
+          "name": "Jumping Jacks / Jogging in Place",
+          "sets": 1,
+          "reps": "3-5 minutes",
+          "description": "Move lightly for 3 to 5 minutes to get your body warm and ready.",
+          "gifUrl": "/assets/images/exercises/jumping-jacks.png",
+          "gifSource": "AI-generated illustration"
+        }
+      ]
+    },
+    {
+      "id": "lower-body",
+      "name": "Phase 2: Lower Body (Volume & Toning)",
+      "emoji": "🍑",
+      "description": "Complete all sets of an exercise before moving on to the next one.",
+      "restBetweenSets": "60 seconds",
+      "exercises": [
+        {
+          "id": "lower-1",
+          "name": "Squats",
+          "sets": 3,
+          "reps": "15 reps",
+          "description": "Stand slightly wider than shoulder-width. Lower into a squat as if sitting in a chair, keeping your back straight and weight on your heels. Push through your heels to return to standing.",
+          "gifUrl": "/assets/images/exercises/squats.png",
+          "gifSource": "AI-generated illustration"
+        },
+        {
+          "id": "lower-2",
+          "name": "Glute Bridges",
+          "sets": 3,
+          "reps": "20 reps",
+          "description": "Lie on your back with knees bent and feet flat on the floor. Lift your hips until your thighs and torso form a straight line. Squeeze your glutes at the top for 2 seconds, then slowly lower back down.",
+          "gifUrl": "/assets/images/exercises/glute-bridge.png",
+          "gifSource": "AI-generated illustration"
+        },
+        {
+          "id": "lower-3",
+          "name": "Lunges",
+          "sets": 3,
+          "reps": "10-12 reps (per leg)",
+          "description": "Take a large step forward while keeping your torso upright. Lower your hips until both knees bend at 90-degree angles. Push forcefully off your front foot to return to starting position.",
+          "gifUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Lunge-CDC_strength_training_for_older_adults.gif",
+          "gifSource": "Wikimedia Commons – Public Domain (CDC)"
+        },
+        {
+          "id": "lower-4",
+          "name": "Donkey Kicks",
+          "sets": 3,
+          "reps": "15-20 reps (per leg)",
+          "description": "Get on all fours on your mat. Keep your knee bent at 90 degrees and kick your leg back and up towards the ceiling. Squeeze your glutes at the top and return slowly without resting the knee on the floor.",
+          "gifUrl": "/assets/images/exercises/donkey-kicks.png",
+          "gifSource": "AI-generated illustration"
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "name": "Phase 3: Core (Waist & Abdominals)",
+      "emoji": "⏳",
+      "description": "Complete all sets for each exercise before advancing.",
+      "restBetweenSets": "45-60 seconds",
+      "exercises": [
+        {
+          "id": "core-1",
+          "name": "Crunches",
+          "sets": 3,
+          "reps": "15-20 reps",
+          "description": "Lie on your back with knees bent. Place fingertips lightly behind your head. Engage your core to lift your shoulder blades off the floor. Exhale on the way up, hold for 1 second, and lower controlled.",
+          "gifUrl": "/assets/images/exercises/crunches.png",
+          "gifSource": "AI-generated illustration"
+        },
+        {
+          "id": "core-2",
+          "name": "Plank",
+          "sets": 3,
+          "reps": "Hold for 30-60 seconds",
+          "description": "Rest on your forearms and toes. Keep your body in a straight line from head to heels. Engage your abs and glutes, preventing your hips from sagging or piking.",
+          "gifUrl": "/assets/images/exercises/plank.png",
+          "gifSource": "AI-generated illustration"
+        },
+        {
+          "id": "core-3",
+          "name": "Leg Raises",
+          "sets": 3,
+          "reps": "12-15 reps",
+          "description": "Lie flat on your back with arms by your sides. Keep your legs straight and raise them towards the ceiling until vertical. Slowly lower them back down without touching the floor while keeping your lower back pressed into the mat.",
+          "gifUrl": "/assets/images/exercises/leg-raises.png",
+          "gifSource": "AI-generated illustration"
+        }
+      ]
+    },
+    {
+      "id": "cooldown",
+      "name": "Phase 4: Cool-Down (Stretching & Recovery)",
+      "emoji": "🧘‍♀️",
+      "description": "Finish with gentle stretches to improve flexibility and aid muscle recovery.",
+      "restBetweenSets": null,
+      "exercises": [
+        {
+          "id": "cooldown-1",
+          "name": "Cobra Stretch",
+          "sets": 1,
+          "reps": "Hold for 20 seconds",
+          "description": "Lie face down, place hands under your shoulders, and gently press up to lift your chest while keeping hips on the floor. Take deep breaths for 20 seconds.",
+          "gifUrl": "/assets/images/exercises/cobra-pose.png",
+          "gifSource": "AI-generated illustration"
+        },
+        {
+          "id": "cooldown-2",
+          "name": "Quad Stretch",
+          "sets": 1,
+          "reps": "20 seconds per leg",
+          "description": "Stand tall, grab one ankle behind you, and pull your heel towards your glutes while keeping knees close together. Hold for 20 seconds, then switch legs.",
+          "gifUrl": "/assets/images/exercises/quad-stretch.png",
+          "gifSource": "AI-generated illustration"
+        }
+      ]
+    }
+  ]
+}

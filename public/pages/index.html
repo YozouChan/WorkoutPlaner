@@ -1,0 +1,345 @@
+<!--
+  index.html
+  ==========
+  Startseite / Kalenderansicht der Workout-Kalender App.
+
+  Layout:
+  - Sidebar (links, fixiert): Navigation mit Gradient
+  - Header (oben rechts): Dark/Light Toggle + Einstellungs-Zahnrad + Stats
+  - Kalenderleiste (oben): 14-Tage-Ansicht (wird von calendar-bar.js befüllt)
+  - Hauptbereich (mitte): Tagesansicht (wird von day-view.js befüllt)
+
+  Eingebundene Scripts:
+  - js/modules/theme.js       → Dark/Light Mode
+  - js/modules/calendar.js    → Kalender-Logik
+  - js/modules/workout.js     → Workout-Anzeige
+  - js/modules/notifications.js → Benachrichtigungen
+  - js/modules/skip.js        → Trainingstag überspringen
+  - js/modules/stats.js       → Statistik-Tracking
+  - js/modules/settings.js    → Einstellungen
+  - js/modules/gifs.js        → GIF-Verwaltung
+  - js/components/sidebar.js  → Sidebar-Rendering
+  - js/components/calendar-bar.js → Kalenderleiste
+  - js/components/workout-card.js → Workout-Karten
+  - js/components/day-view.js → Tagesansicht
+  - js/components/modal.js    → Modale Dialoge
+  - js/components/gif-overlay.js → GIF-Overlay
+  - js/app.js                 → Haupt-Einstiegspunkt
+
+  CSS: css/output.css (kompiliertes Tailwind CSS)
+-->
+<!DOCTYPE html>
+<html lang="de" class="">
+
+  <!-- Anti-Flash Theme Init Script (verhindert Mode-Blitzen beim Navigieren) -->
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('workout-calendar-theme');
+        var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (t === 'dark' || (!t && d)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Kompiliertes Tailwind CSS -->
+  <link rel="stylesheet" href="/css/output.css">
+</head>
+
+<body
+  class="bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark transition-colors duration-300 min-h-screen">
+
+  <!-- ============================
+       SIDEBAR (fixiert, links)
+       ============================ -->
+  <aside id="sidebar"
+    class="fixed left-0 top-0 h-screen w-64 bg-white/95 dark:bg-gradient-sidebar border-r border-gray-200/80 dark:border-white/10 z-40 flex flex-col shadow-xl transition-colors duration-300 lg:translate-x-0 -translate-x-full">
+
+    <!-- Sidebar Header / Logo -->
+    <div class="p-6 border-b border-gray-200/80 dark:border-white/10">
+      <h1 class="text-2xl font-bold text-text-light dark:text-white flex items-center gap-2">
+        <span class="text-3xl">🏋️</span>
+        <span class="text-gradient-brand bg-gradient-brand bg-clip-text text-transparent">
+          Workout
+        </span>
+      </h1>
+      <p class="text-sm text-text-light-secondary dark:text-gray-400 mt-1" data-i18n="sidebar_subtitle">Dein Trainingsplan</p>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar-nav" class="flex-1 p-4 space-y-2">
+      <!-- Kalender (aktiv) -->
+      <a href="/" id="nav-calendar" class="sidebar-item active" data-page="calendar">
+        <span class="text-xl">📅</span>
+        <span data-i18n="nav_calendar">Kalender</span>
+      </a>
+
+      <!-- Workout Editor -->
+      <a href="/editor" id="nav-editor" class="sidebar-item" data-page="editor">
+        <span class="text-xl">🏋️</span>
+        <span data-i18n="nav_editor">Workout Editor</span>
+      </a>
+
+      <!-- Leaderboard -->
+      <a href="/leaderboard" id="nav-leaderboard" class="sidebar-item" data-page="leaderboard">
+        <span class="text-xl">🏆</span>
+        <span data-i18n="nav_leaderboard">Leaderboard</span>
+      </a>
+    </nav>
+
+    <!-- Sidebar Footer: Stats -->
+    <div id="sidebar-stats" class="p-4 border-t border-gray-200/80 dark:border-white/10">
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-text-light-secondary dark:text-gray-400 flex items-center gap-2">
+            <span>✅</span> <span data-i18n="sidebar_completed">Abgeschlossen</span>
+          </span>
+          <span id="stats-completed" class="text-green-600 dark:text-green-400 font-bold">0</span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-text-light-secondary dark:text-gray-400 flex items-center gap-2">
+            <span>⏭️</span> <span data-i18n="sidebar_skipped">Übersprungen</span>
+          </span>
+          <span id="stats-skipped" class="text-amber-500 dark:text-yellow-400 font-bold">0</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Sidebar Toggle Button -->
+  <button id="sidebar-toggle"
+    class="fixed top-4 left-4 z-50 lg:hidden bg-surface-dark-secondary/90 text-white p-3 rounded-xl shadow-lg backdrop-blur-sm hover:bg-surface-dark-tertiary transition-colors">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <!-- Sidebar Overlay (Mobile) -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" aria-hidden="true"></div>
+
+  <!-- ============================
+       MAIN CONTENT (rechts neben Sidebar)
+       ============================ -->
+  <main class="lg:ml-64 min-h-screen transition-all duration-300">
+
+    <!-- ============================
+         HEADER (oben rechts)
+         ============================ -->
+    <header
+      class="sticky top-0 z-20 bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/30">
+      <div class="flex items-center justify-between pl-16 pr-4 py-3 lg:px-6 lg:py-4">
+
+        <!-- Linke Seite: Seitentitel -->
+        <div class="min-w-0 flex-1">
+          <h2 id="page-title" class="text-lg lg:text-xl font-bold truncate" data-i18n="header_calendar_title">📅 Kalender</h2>
+          <p id="page-subtitle"
+            class="text-xs lg:text-sm text-text-light-secondary dark:text-text-dark-secondary hidden sm:block" data-i18n="header_calendar_subtitle">
+            Dein Trainingsplan für die nächsten 14 Tage
+          </p>
+        </div>
+
+        <!-- Rechte Seite: Toggle + Einstellungen -->
+        <div class="flex items-center gap-2 lg:gap-3 flex-shrink-0">
+
+          <!-- Benutzer-Bereich -->
+          <div id="user-display" class="hidden flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-surface-dark-tertiary border border-gray-200/50 dark:border-gray-700/30">
+            <span class="text-lg">👤</span>
+            <span id="username-display" class="text-xs font-semibold text-brand-purple truncate max-w-[80px] sm:max-w-[120px]" data-i18n="guest_user">Gast</span>
+            <button id="logout-btn" class="text-xs text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 font-bold ml-1 hover:scale-105 active:scale-95 transition-all duration-200" title="Abmelden" data-i18n="header_logout" data-i18n-title="header_logout_title">Abmelden</button>
+          </div>
+
+          <!-- Dark/Light Mode Switch (schlank & elegant) -->
+          <button id="theme-toggle"
+            class="relative inline-flex items-center w-12 h-6 rounded-full bg-gray-200/90 dark:bg-surface-dark-tertiary border border-gray-300/60 dark:border-gray-700/60 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-brand-purple/40 cursor-pointer shadow-inner p-0.5"
+            title="Dark/Light Mode umschalten" data-i18n-title="header_theme_title">
+            <span id="theme-toggle-dot"
+              class="w-5 h-5 rounded-full bg-white dark:bg-brand-purple shadow-md transform transition-transform duration-300 dark:translate-x-6 flex items-center justify-center text-[11px] select-none">
+              <span class="dark:hidden leading-none">☀️</span>
+              <span class="hidden dark:inline leading-none">🌙</span>
+            </span>
+          </button>
+
+          <!-- Language Switch (EN / DE) -->
+          <button id="lang-toggle"
+            class="relative inline-flex items-center w-12 h-6 rounded-full bg-gray-200/90 dark:bg-surface-dark-tertiary border border-gray-300/60 dark:border-gray-700/60 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-brand-purple/40 cursor-pointer shadow-inner p-0.5"
+            title="Switch Language (EN / DE)" data-i18n-title="header_lang_title">
+            <span id="lang-toggle-dot"
+              class="w-5 h-5 rounded-full bg-white dark:bg-brand-purple shadow-md transform transition-transform duration-300 flex items-center justify-center select-none text-[10px] font-bold text-gray-800 dark:text-white">
+              <span class="leading-none">EN</span>
+            </span>
+          </button>
+
+          <!-- Einstellungen Zahnrad -->
+          <button id="settings-btn"
+            class="p-2 rounded-xl text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-surface-dark-tertiary hover:text-brand-purple transition-all duration-200"
+            title="Einstellungen" data-i18n-title="header_settings_title">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================
+         STATS-BANNER
+         Wird von modules/stats.js befüllt
+         ============================ -->
+    <section id="stats-banner"
+      class="px-3 lg:px-6 py-2 lg:py-3 border-b border-gray-200/50 dark:border-gray-700/30 bg-surface-light/50 dark:bg-surface-dark/50">
+      <div
+        class="flex items-center gap-2 lg:gap-4 overflow-x-auto scrollbar-thin pb-1 lg:pb-0 flex-nowrap lg:flex-wrap">
+        <!-- Abgeschlossene Workouts -->
+        <div
+          class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-700/50">
+          <span class="text-base">✅</span>
+          <span class="text-xs font-medium text-green-700 dark:text-green-300" data-i18n="stats_completed">Abgeschlossen:</span>
+          <span id="header-stats-completed" class="text-sm font-bold text-green-600 dark:text-green-400">0</span>
+        </div>
+        <!-- Übersprungene Workouts -->
+        <div
+          class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700/50">
+          <span class="text-base">⏭️</span>
+          <span class="text-xs font-medium text-yellow-700 dark:text-yellow-300" data-i18n="stats_skipped">Übersprungen:</span>
+          <span id="header-stats-skipped" class="text-sm font-bold text-yellow-600 dark:text-yellow-400">0</span>
+        </div>
+        <!-- Streak -->
+        <div
+          class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700/50">
+          <span class="text-base">🔥</span>
+          <span class="text-xs font-medium text-orange-700 dark:text-orange-300" data-i18n="stats_streak">Streak:</span>
+          <span id="header-stats-streak" class="text-sm font-bold text-orange-600 dark:text-orange-400">0</span>
+        </div>
+        <!-- Gesamt-Fortschritt -->
+        <div
+          class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700/50 ml-auto">
+          <span class="text-base">💪</span>
+          <span id="header-stats-progress" class="text-xs font-medium text-purple-700 dark:text-purple-300">0%
+            Erfolgsquote</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+         KALENDERLEISTE (navigierbar)
+         Wird von components/calendar-bar.js befüllt
+         ============================ -->
+    <section id="calendar-bar-container"
+      class="px-2 lg:px-3 py-3 lg:py-4 border-b border-gray-200/50 dark:border-gray-700/30 bg-surface-light-secondary/50 dark:bg-surface-dark-secondary/30">
+      <div class="flex items-center gap-1 lg:gap-2">
+        <!-- Zurück-Pfeil -->
+        <button id="cal-nav-prev" class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
+                 text-text-light-secondary dark:text-text-dark-secondary
+                 hover:bg-gray-100 dark:hover:bg-surface-dark-tertiary
+                 hover:text-brand-purple transition-all duration-200 hover:scale-110 active:scale-95" title="Zurück" data-i18n-title="nav_prev">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <!-- Tages-Kacheln -->
+        <div id="calendar-bar" class="flex gap-2 overflow-hidden flex-1">
+          <!-- Kalender-Tage werden hier dynamisch eingefügt -->
+          <div class="flex gap-2 animate-pulse">
+            <div class="w-16 h-20 rounded-xl bg-gray-200 dark:bg-surface-dark-tertiary flex-shrink-0"></div>
+            <div class="w-16 h-20 rounded-xl bg-gray-200 dark:bg-surface-dark-tertiary flex-shrink-0"></div>
+            <div class="w-16 h-20 rounded-xl bg-gray-200 dark:bg-surface-dark-tertiary flex-shrink-0"></div>
+            <div class="w-16 h-20 rounded-xl bg-gray-200 dark:bg-surface-dark-tertiary flex-shrink-0"></div>
+            <div class="w-16 h-20 rounded-xl bg-gray-200 dark:bg-surface-dark-tertiary flex-shrink-0"></div>
+            <div class="w-16 h-20 rounded-xl bg-gray-200 dark:bg-surface-dark-tertiary flex-shrink-0"></div>
+            <div class="w-16 h-20 rounded-xl bg-gray-200 dark:bg-surface-dark-tertiary flex-shrink-0"></div>
+          </div>
+        </div>
+
+        <!-- Vorwärts-Pfeil -->
+        <button id="cal-nav-next" class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
+                 text-text-light-secondary dark:text-text-dark-secondary
+                 hover:bg-gray-100 dark:hover:bg-surface-dark-tertiary
+                 hover:text-brand-purple transition-all duration-200 hover:scale-110 active:scale-95" title="Vorwärts" data-i18n-title="nav_next">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================
+         TAGESANSICHT / HAUPTBEREICH
+         Wird von components/day-view.js befüllt
+         ============================ -->
+    <section id="day-view-container" class="p-3 lg:p-6">
+      <div id="day-view" class="max-w-3xl mx-auto">
+        <!-- Platzhalter bis JavaScript geladen ist -->
+        <div class="text-center py-16 animate-fade-in">
+          <div class="text-6xl mb-4">🏋️</div>
+          <h3 class="text-2xl font-bold mb-2 text-gradient-brand bg-gradient-brand bg-clip-text text-transparent">
+            WorkoutPlaner
+          </h3>
+          <p class="text-text-light-secondary dark:text-text-dark-secondary">
+            Wird geladen...
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================
+       MODAL CONTAINER
+       Wird von components/modal.js und components/gif-overlay.js genutzt
+       ============================ -->
+  <div id="modal-container"></div>
+
+  <!-- ============================
+       BUGREPORT BUTTON (unten rechts)
+       ============================ -->
+  <button id="bugreport-btn"
+    class="fixed bottom-4 right-4 z-40 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 dark:bg-surface-dark-tertiary/80 border border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl text-xs font-semibold hover:scale-105 active:scale-95 transition-all duration-200 backdrop-blur-sm group text-text-light dark:text-text-dark"
+    title="Bug / Fehler melden">
+    <span class="text-base group-hover:animate-bounce">🐛</span>
+    <span class="hidden sm:inline">Bug melden</span>
+  </button>
+
+  <!-- ============================
+       NOTIFICATION BANNER
+       Wird von modules/notifications.js genutzt
+       ============================ -->
+  <div id="notification-banner" class="fixed top-4 right-4 z-50 hidden">
+    <!-- In-App Benachrichtigungen werden hier eingefügt -->
+  </div>
+
+  <!-- ============================
+       SCRIPTS (modular geladen)
+       ============================ -->
+  <!-- Module -->
+  <script src="/js/modules/api-client.js"></script>
+  <script src="/js/modules/i18n.js"></script>
+  <script src="/js/modules/theme.js"></script>
+  <script src="/js/modules/calendar.js"></script>
+  <script src="/js/modules/workout.js"></script>
+  <script src="/js/modules/notifications.js"></script>
+  <script src="/js/modules/gifs.js"></script>
+  <script src="/js/modules/skip.js"></script>
+  <script src="/js/modules/stats.js"></script>
+  <script src="/js/modules/settings.js"></script>
+
+  <!-- Komponenten -->
+  <script src="/js/components/sidebar.js"></script>
+  <script src="/js/components/calendar-bar.js"></script>
+  <script src="/js/components/workout-card.js"></script>
+  <script src="/js/components/day-view.js"></script>
+  <script src="/js/components/modal.js"></script>
+  <script src="/js/components/gif-overlay.js"></script>
+
+  <!-- Haupt-App -->
+  <script src="/js/app.js"></script>
+</body>
+
+</html>

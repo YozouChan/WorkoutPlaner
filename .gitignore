@@ -1,0 +1,52 @@
+# ============================================
+# .gitignore - Workout Calendar App
+# ============================================
+
+# Dependencies
+node_modules/
+jspm_packages/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# User Data & Custom Uploads
+public/uploads/*
+!public/uploads/.gitkeep
+data/users/*
+!data/users/.gitkeep
+
+# Environment variables & local secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# OS System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary & Build cache files
+.npm
+.eslintcache
+.stylelintcache
+*.tmp
+*.temp

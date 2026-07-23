@@ -1,0 +1,30 @@
+{
+  "name": "workout-planer",
+  "version": "1.0.0",
+  "description": "Modulare WorkoutPlaner Web-App mit 14-Tage-Ansicht, Trainingsplan-Tracking, Skip-Funktion und Workout-Editor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "npx concurrently --names SERVER,CSS --prefix-colors blue,magenta \"npx nodemon server.js\" \"npx tailwindcss -i ./src/styles/input.css -o ./public/css/output.css --watch\"",
+    "build:css": "npx tailwindcss -i ./src/styles/input.css -o ./public/css/output.css --minify",
+    "watch:css": "npx tailwindcss -i ./src/styles/input.css -o ./public/css/output.css --watch"
+  },
+  "keywords": [
+    "workout",
+    "calendar",
+    "fitness",
+    "tracker"
+  ],
+  "author": "YozouChan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.1",
+    "concurrently": "^10.0.3",
+    "nodemon": "^3.1.14",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19"
+  }
+}

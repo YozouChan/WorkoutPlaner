@@ -1,0 +1,374 @@
+/**
+ * input.css
+ * =========
+ * Tailwind CSS Eingabedatei für die Workout-Kalender App.
+ *
+ * Zweck:
+ * - Lädt Tailwind Base, Components und Utilities
+ * - Definiert CSS Custom Properties für Light/Dark Mode
+ * - Enthält globale Styles und wiederverwendbare Komponenten-Klassen
+ *
+ * Kompilierung: npx tailwindcss -i ./src/styles/input.css -o ./public/css/output.css
+ * Wird eingebunden in: public/pages/index.html, public/pages/editor.html
+ */
+
+/* ============================
+   Tailwind Directives
+   ============================ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================
+   Google Fonts Import (Inter)
+   ============================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ============================
+   CSS Custom Properties (Theme-Variablen)
+   Light Mode = Standard, Dark Mode über .dark Klasse
+   ============================ */
+@layer base {
+  :root {
+    /* Light Mode Farben */
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F8F9FC;
+    --color-bg-tertiary: #F0F1F5;
+    --color-text-primary: #1E1E2E;
+    --color-text-secondary: #6B7280;
+    --color-border: #E5E7EB;
+
+    /* Brand Farben (gleich in beiden Modes) */
+    --color-brand-pink: #FF6B9D;
+    --color-brand-purple: #A855F7;
+    --color-brand-blue: #6366F1;
+
+    /* Gradient */
+    --gradient-brand: linear-gradient(135deg, #FF6B9D 0%, #A855F7 50%, #6366F1 100%);
+  }
+
+  .dark {
+    /* Dark Mode Farben */
+    --color-bg-primary: #0F0F1A;
+    --color-bg-secondary: #1A1A2E;
+    --color-bg-tertiary: #25253D;
+    --color-text-primary: #F0F0F5;
+    --color-text-secondary: #A0A0B8;
+    --color-border: #2D2D4A;
+  }
+
+  /* Globale Base Styles */
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    scroll-behavior: smooth;
+    /* Safe-Area für iPhone Notch/Home-Indicator */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  body {
+    @apply bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark;
+    @apply transition-colors duration-300;
+    min-height: 100vh;
+    /* Verhindert doppeltes Tippen bei iOS */
+    -webkit-tap-highlight-color: transparent;
+    /* Besseres Touch-Scrolling */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mindest-Touch-Zielgröße (Apple: min 44pt) */
+  button, a, [role="button"] {
+    min-height: 36px;
+    min-width: 36px;
+  }
+
+  /* Eingabefelder auf Mobile: kein Zoomen */
+  @media (max-width: 768px) {
+    input, textarea, select {
+      font-size: 16px; /* Verhindert iOS-Zoom bei Focus */
+    }
+  }
+}
+
+/* ============================
+   Wiederverwendbare Komponenten-Klassen
+   ============================ */
+@layer components {
+  /* Karte mit Glassmorphism-Effekt */
+  .card-glass {
+    @apply bg-white/80 dark:bg-surface-dark-secondary/80;
+    @apply backdrop-blur-md;
+    @apply border border-gray-200/50 dark:border-gray-700/30;
+    @apply rounded-2xl;
+    @apply shadow-lg;
+    @apply transition-all duration-300;
+  }
+
+  .card-glass:hover {
+    @apply shadow-brand;
+    @apply border-brand-purple/30;
+  }
+
+  /* Gradient-Button (primär) */
+  .btn-brand {
+    @apply bg-gradient-brand;
+    @apply text-white font-semibold;
+    @apply px-6 py-3 rounded-xl;
+    @apply shadow-brand;
+    @apply transition-all duration-300;
+    @apply hover:shadow-brand-lg hover:scale-105;
+    @apply active:scale-95;
+  }
+
+  /* Ghost-Button (sekundär) */
+  .btn-ghost {
+    @apply bg-transparent;
+    @apply text-brand-purple dark:text-brand-purple-light;
+    @apply border border-brand-purple/30;
+    @apply px-6 py-3 rounded-xl;
+    @apply font-semibold;
+    @apply transition-all duration-300;
+    @apply hover:bg-brand-purple/10 hover:border-brand-purple/50;
+    @apply active:scale-95;
+  }
+
+  /* Sidebar-Menüpunkt */
+  .sidebar-item {
+    @apply flex items-center gap-3;
+    @apply px-4 py-3 rounded-xl;
+    @apply text-text-light-secondary dark:text-text-dark-secondary;
+    @apply font-medium text-sm;
+    @apply transition-all duration-200;
+    @apply hover:bg-purple-50 dark:hover:bg-white/10 hover:text-brand-purple dark:hover:text-white;
+    @apply cursor-pointer;
+  }
+
+  .sidebar-item.active {
+    @apply bg-gradient-brand text-white font-bold;
+    @apply shadow-brand;
+  }
+
+  /* Kalender-Tag */
+  .calendar-day {
+    @apply flex flex-col items-center justify-center;
+    @apply w-12 h-16 sm:w-16 sm:h-20 rounded-xl;
+    @apply text-xs sm:text-sm font-medium;
+    @apply transition-all duration-200;
+    @apply cursor-pointer;
+    @apply border-2 border-transparent;
+    /* Touch-freundlich: aktiven State per :active statt nur :hover */
+    @apply active:scale-95;
+  }
+
+  .calendar-day.today {
+    @apply border-brand-purple;
+    @apply bg-gradient-brand text-white;
+    @apply shadow-glow-purple;
+    @apply font-bold;
+  }
+
+  .calendar-day.training {
+    @apply bg-brand-purple/10 dark:bg-brand-purple/20;
+    @apply text-brand-purple dark:text-brand-purple-light;
+    @apply hover:bg-brand-purple/20 dark:hover:bg-brand-purple/30;
+  }
+
+  .calendar-day.rest {
+    @apply bg-gray-100 dark:bg-gray-800/50;
+    @apply text-gray-400 dark:text-gray-500;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-700/50;
+  }
+
+  /* Workout-Karte (Übung) */
+  .workout-card {
+    @apply card-glass;
+    @apply p-5;
+    @apply animate-fade-in-up;
+  }
+
+  .workout-card.completed {
+    @apply border-green-400/50 bg-green-50/50 dark:bg-green-900/10;
+  }
+
+  /* Modal / Overlay */
+  .modal-overlay {
+    @apply fixed inset-0 z-50;
+    @apply bg-black/60 backdrop-blur-sm;
+    @apply flex items-center justify-center;
+    @apply animate-fade-in;
+  }
+
+  .modal-content {
+    @apply card-glass;
+    @apply p-8 max-w-lg w-full mx-4;
+    @apply animate-bounce-in;
+  }
+}
+
+/* ============================
+   Utility-Erweiterungen
+   ============================ */
+@layer utilities {
+  /* Text-Gradient */
+  .text-gradient-brand {
+    @apply bg-gradient-brand bg-clip-text text-transparent;
+  }
+
+  /* Scrollbar-Styling (Webkit) */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-brand-purple/30 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-purple/50;
+  }
+}
+
+/* ============================
+   Animationen & Keyframes
+   ============================ */
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0%   { opacity: 0; transform: scale(0.85); }
+  60%  { opacity: 1; transform: scale(1.04); }
+  80%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(168, 85, 247, 0);
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ============================
+   Animation Utility Classes
+   ============================ */
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out both;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.35s ease-out both;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.25s ease-out both;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Stagger delays for list items */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Smooth page transitions */
+.page-enter {
+  animation: fadeInUp 0.35s ease-out both;
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .skeleton {
+  background: linear-gradient(90deg, #2a2a3e 25%, #333350 50%, #2a2a3e 75%);
+  background-size: 200% 100%;
+}
+
+/* Transition for theme switching */
+* {
+  transition-property: background-color, border-color, color;
+  transition-timing-function: ease;
+  transition-duration: 200ms;
+}
+
+/* But keep transforms fast */
+button, a, [role="button"] {
+  transition-property: background-color, border-color, color, transform, box-shadow, opacity;
+  transition-timing-function: ease;
+  transition-duration: 150ms;
+}
+
