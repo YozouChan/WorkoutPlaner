@@ -79,11 +79,11 @@ const LeaderboardModule = (() => {
 
           <div class="grid grid-cols-2 gap-4 text-center md:text-right border-t md:border-t-0 border-gray-200/50 dark:border-gray-700/30 pt-3 md:pt-0">
             <div class="p-2.5 rounded-xl bg-white/40 dark:bg-surface-dark-tertiary/40">
-              <span class="block text-xs text-text-light-secondary dark:text-text-dark-secondary">${t('lb_summary_streak_rank')}</span>
+              <span class="block text-xs text-text-light-secondary dark:text-text-dark-secondary">🔥 ${t('lb_summary_streak_rank')}</span>
               <span class="text-sm font-semibold">${streakRankText}</span>
             </div>
             <div class="p-2.5 rounded-xl bg-white/40 dark:bg-surface-dark-tertiary/40">
-              <span class="block text-xs text-text-light-secondary dark:text-text-dark-secondary">${t('lb_summary_workout_rank')}</span>
+              <span class="block text-xs text-text-light-secondary dark:text-text-dark-secondary">🏋️ ${t('lb_summary_workout_rank')}</span>
               <span class="text-sm font-semibold">${completedRankText}</span>
             </div>
           </div>
