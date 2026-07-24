@@ -18,6 +18,7 @@ A modern, responsive web application for managing workout routines, tracking cal
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🚀 Quick Start & Installation](#-quick-start--installation)
 - [🐳 Running with Docker](#-running-with-docker)
+- [🔄 Updating Production](#-updating-production)
 - [📂 Project Structure](#-project-structure)
 - [📡 API Endpoints](#-api-endpoints)
 - [🌍 Internationalization (i18n)](#-internationalization-i18n)
@@ -122,6 +123,69 @@ docker compose down
 ```
 
 *For more details on Docker CLI commands, refer to [`DOCKER.md`](DOCKER.md).*
+
+---
+
+## 🔄 Updating Production
+
+Before updating your production deployment, it is always recommended to create a quick backup of your persistent data:
+
+```bash
+# Optional: Create a quick data backup before updating
+cp -r data data_backup_$(date +%Y%m%d)
+cp -r public/uploads uploads_backup_$(date +%Y%m%d)
+```
+
+---
+
+### 🐳 Option A: Updating Docker Deployment (Recommended)
+
+Because user data (`data/`) and uploads (`public/uploads/`) are mounted as Docker volumes, upgrading to the latest version retains all existing user accounts, workouts, and images.
+
+1. **Pull the latest code from Git:**
+   ```bash
+   git pull origin main
+   ```
+
+2. **Rebuild and restart the container:**
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. *(Optional)* **Clean up old/unused Docker images:**
+   ```bash
+   docker image prune -f
+   ```
+
+---
+
+### 💻 Option B: Updating Native Node.js / Server Deployment
+
+If you are running the application natively using Node.js or a process manager like **PM2**:
+
+1. **Pull the latest code from Git:**
+   ```bash
+   git pull origin main
+   ```
+
+2. **Install or update dependencies:**
+   ```bash
+   npm install --production
+   ```
+
+3. **Rebuild production CSS:**
+   ```bash
+   npm run build:css
+   ```
+
+4. **Restart the production process:**
+   ```bash
+   # If using PM2:
+   pm2 restart workout-planer
+
+   # Or if using systemd / direct Node:
+   # Restart your system service or re-run: npm start
+   ```
 
 ---
 
