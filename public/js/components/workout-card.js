@@ -66,7 +66,17 @@ const WorkoutCard = (() => {
       </div>
     ` : '';
 
-    const gifHtml = exercise.gifUrl
+    const ytEmbed = (window.MediaUrl && MediaUrl.isYouTube(exercise.gifUrl)) ? MediaUrl.embedUrl(exercise.gifUrl) : null;
+    const gifHtml = ytEmbed
+      ? `<div class="mt-3 rounded-xl overflow-hidden bg-black">
+           <div class="relative" style="padding-bottom:56.25%">
+             <iframe src="${ytEmbed}" title="${exercise.name}"
+                     class="absolute inset-0 w-full h-full" frameborder="0" loading="lazy"
+                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+           </div>
+         </div>`
+      : exercise.gifUrl
       ? `<div class="mt-3 rounded-xl overflow-hidden bg-black/5 dark:bg-white/5">
            <img src="${exercise.gifUrl}" alt="${exercise.name}"
                 class="w-full max-h-56 object-contain" loading="lazy">

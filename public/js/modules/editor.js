@@ -372,8 +372,9 @@ const Editor = (() => {
         </div>
 
         ${exercise.gifUrl ? `
-          <div class="w-12 h-12 rounded-lg overflow-hidden bg-black/5 dark:bg-white/5 border border-gray-200/60 dark:border-gray-700/40 flex-shrink-0 self-center">
-            <img src="${_escapeHtml(exercise.gifUrl)}" alt="${_escapeHtml(exercise.name)}" class="w-full h-full object-contain" />
+          <div class="relative w-12 h-12 rounded-lg overflow-hidden bg-black/5 dark:bg-white/5 border border-gray-200/60 dark:border-gray-700/40 flex-shrink-0 self-center">
+            <img src="${_escapeHtml((window.MediaUrl && MediaUrl.isYouTube(exercise.gifUrl)) ? MediaUrl.thumbUrl(exercise.gifUrl) : exercise.gifUrl)}" alt="${_escapeHtml(exercise.name)}" class="w-full h-full object-contain" />
+            ${(window.MediaUrl && MediaUrl.isYouTube(exercise.gifUrl)) ? '<span class="absolute inset-0 flex items-center justify-center text-white text-sm drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">▶</span>' : ''}
           </div>
         ` : ''}
 
@@ -759,10 +760,14 @@ const Editor = (() => {
             </select>
             <input
               id="ex-gifurl" type="text"
-              placeholder="https://... oder /assets/..."
+              placeholder="Bild-/GIF-URL, /assets/... oder YouTube-Link"
               value="${_escapeHtml(initialGifUrl)}"
               class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-surface-dark-secondary text-xs focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
             >
+            <p class="text-[11px] text-text-light-secondary dark:text-text-dark-secondary mt-1 leading-snug">
+              🎬 GIF/Bild-URL <span class="opacity-60">oder</span> ▶️ YouTube-Link – die Startzeit wird übernommen
+              (z.&nbsp;B. <code class="px-1 rounded bg-black/5 dark:bg-white/10">…watch?v=ID&amp;t=1m30s</code>).
+            </p>
           </div>
         </details>
       </div>
@@ -791,10 +796,11 @@ const Editor = (() => {
     const updatePreview = () => {
       const url = gifUrlInput?.value?.trim();
       if (url) {
-        if (previewImg) previewImg.src = url;
+        const isYt = window.MediaUrl && MediaUrl.isYouTube(url);
+        if (previewImg) previewImg.src = isYt ? MediaUrl.thumbUrl(url) : url;
         if (dropzoneEmpty) dropzoneEmpty.classList.add('hidden');
         if (dropzonePreview) dropzonePreview.classList.remove('hidden');
-        if (previewText) previewText.textContent = 'Bild / GIF aktiv';
+        if (previewText) previewText.textContent = isYt ? '▶️ YouTube-Video aktiv' : 'Bild / GIF aktiv';
       } else {
         if (previewImg) previewImg.src = '';
         if (dropzoneEmpty) dropzoneEmpty.classList.remove('hidden');
@@ -802,6 +808,8 @@ const Editor = (() => {
         if (previewText) previewText.textContent = 'Kein Bild ausgewählt';
       }
     };
+    // Initial normalisieren (z.B. YouTube-Thumbnail statt kaputtem <img>)
+    updatePreview();
 
     if (presetSelect && gifUrlInput) {
       presetSelect.onchange = () => {

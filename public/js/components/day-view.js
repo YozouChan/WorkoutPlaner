@@ -257,7 +257,16 @@ const DayView = (() => {
               <p class="text-sm text-text-light-secondary dark:text-text-dark-secondary leading-relaxed mb-3">
                 📝 <strong>${t('card_execution')}</strong> ${translateText(exercise.description)}
               </p>
-              ${exercise.gifUrl ? `
+              ${(window.MediaUrl && MediaUrl.isYouTube(exercise.gifUrl)) ? `
+                <div class="rounded-xl overflow-hidden bg-black">
+                  <div class="relative" style="padding-bottom:56.25%">
+                    <iframe src="${MediaUrl.embedUrl(exercise.gifUrl)}" title="${exercise.name}"
+                            class="absolute inset-0 w-full h-full" frameborder="0" loading="lazy"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                  </div>
+                </div>
+              ` : exercise.gifUrl ? `
                 <div class="rounded-xl overflow-hidden bg-gray-100 dark:bg-surface-dark-tertiary">
                   <img src="${exercise.gifUrl}" alt="${exercise.name}" class="w-full max-h-48 object-contain" loading="lazy">
                 </div>
@@ -652,11 +661,14 @@ const DayView = (() => {
    */
   async function _toggleExercise(exerciseId) {
     if (window.Workout && _workoutData) {
-      // Workout-Modul übernimmt Toggle, Speichern und Abschluss-Logik
+      // Workout-Modul übernimmt Toggle, Speichern und Abschluss-Logik.
+      // Wichtig: die Phasen des ANGEZEIGTEN Tages verwenden (nicht die des
+      // aktiven Workouts) – bei Wochentags-Planung unterscheidet sich das
+      // Tages-Workout vom aktiven, sonst wird der Abschluss nie erkannt.
       const { checked } = await Workout.toggleExercise(
         _currentDay.date,
         exerciseId,
-        _workoutData.phases
+        _getPhasesToRender()
       );
       _checkedExercises = checked;
     } else {
